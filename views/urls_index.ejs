@@ -1,8 +1,12 @@
 <% include partials/_header %>
 	<body>
 		<% for(x in urls){ %>
-	    <p><%= urls[x] %> ~ shortened url: <%= x %></p>
+	    <p><%= x %> ~> <a href='<%=urls[x]%>'><%= urls[x] %></a> <a href='urls/<%=x%>'> Edit </a> </p>
+
+	    <form method="POST" action=<%="/urls/" + x + "/delete"%>>
+	    	<button type='submit'>Delete</button>
+	    </form>
 	    <% } %>
-	    <a href=''> shorten new url </a>
+	    <a href='urls/new'> shorten new url </a>
 	</body>
 </html>
