@@ -47,6 +47,13 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.get("/register", (req, res) => {
+  let templateVars = {
+    username: req.cookies["username"] ? req.cookies['username'] : '',
+    shortURL: req.params.id };
+  res.render("register", templateVars);
+});
+
 app.post("/urls/:id/delete", (req, res) => {
   console.log(req.params.id);
   delete urlDatabase[req.params.id]
