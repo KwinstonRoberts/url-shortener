@@ -15,8 +15,10 @@ function generateRandomString() {
 }
 
 var urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "userRandomID":{
+    "b2xVn2": "http://www.lighthouselabs.ca",
+    "9sm5xK": "http://www.google.com"
+  }
 };
 
 const users = { 
@@ -37,10 +39,16 @@ app.get("/", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars =  { 
-    urls:urlDatabase,
-    user: users[req.cookies["user_id"]]
+  let templateVars={
+    res:res,
+    user: users[req.cookies["user_id"]],
+    urls:{}
   };
+  for(x in urlDatabase){
+    if (req.cookies['user_id']===x){
+      templateVars['urls'] = urlDatabase[x];
+    }
+  }
   res.render("urls_index",templateVars)
 });
 
@@ -52,8 +60,22 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new",templateVars);
 });
 
+app.post("/urls/new", (req, res) => {
+  var id = generateRandomString();
+  console.log(urlDatabase[req.cookies.user_id])
+  urlDatabase[req.cookies['user_id']][id] = req.body.longURL;
+  res.redirect('/urls');
+});
+
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL;
+  for(x in urlDatabase){
+    for (y in urlDatabase[x]){
+      if(y===req.params.shortURL){
+        longURL = urlDatabase[x][req.params.shortURL];
+      }
+    }
+  }
   res.redirect(longURL);
 });
 
@@ -63,6 +85,12 @@ app.get("/urls/:id", (req, res) => {
     shortURL: req.params.id };
   res.render("urls_show", templateVars);
 });
+
+app.post("/urls/:id", (req, res) => {
+  urlDatabase[req.cookies.user_id][req.params.id] = req.body.longURL
+  res.redirect('/urls')
+});
+
 
 app.get("/register", (req, res) => {
     let templateVars = {
@@ -89,6 +117,7 @@ app.post("/register", (req, res) => {
         email: req.body.username,
         password: req.body.password
       };
+      urlDatabase[userid] = {};
       console.log(users);
     res.cookie('user_id',userid)
     res.redirect('/urls');
@@ -97,7 +126,7 @@ app.post("/register", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   console.log(req.params.id);
-  delete urlDatabase[req.params.id]
+  delete urlDatabase[req.cookies.user_id][req.params.id];
   res.redirect('/urls');
 });
 
