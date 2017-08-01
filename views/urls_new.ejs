@@ -1,3 +1,4 @@
+<% if(user===undefined){res.redirect('/login');}else{ %>
 <% include partials/_header %>
      <form action="/urls" method="POST" style="margin:150px;">
       <label for="longURL">Enter a URL:</label>
@@ -6,3 +7,4 @@
     </form>
   </body>
 </html>
+<%}%>
