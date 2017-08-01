@@ -1,11 +1,12 @@
 <% include partials/_header %>
   <% if(!user){%>
-    <p>You must be logged in to see your shortened urls </p>
-    <%}else if(!urls){%>
-    <p>You don't have any urls. why not make one below!</p>
+    <b>You must be logged in to see your shortened urls </b>
+    <%}else if(!Object.keys(urls).length){%>
+    <b>You don't have any urls. why not make one below!</b></br>
+    <a href='urls/new'> shorten new url </a>
     <%}else{%>
     <% for(x in urls){ %>
-      <p><%=x%> ~> <a href='<%=urls[x]%>'><%= urls[x] %></a> <a href='urls/<%=x%>'> Edit </a> </p>
+      <p><%=x%> ~> <a href='<%= 'https://' + urls[x].replace('https://','')%>'><%= urls[x] %></a> <a href='urls/<%=x%>'> Edit </a> </p>
       <form method="POST" action=<%="/urls/" + x + "/delete"%>>
         <button type='submit'>Delete</button>
       </form>
