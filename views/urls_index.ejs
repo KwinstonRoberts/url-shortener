@@ -7,7 +7,7 @@
     <%}else{%>
     <% for(x in urls){ %>
       <p><%=x%> ~> <a href='<%= 'https://' + urls[x].replace('https://','')%>'><%= urls[x] %></a> <a href='urls/<%=x%>'> Edit </a> </p>
-      <form method="POST" action=<%="/urls/" + x + "/delete"%>>
+      <form method="POST" action=<%="/urls/" + x + "/delete?method=DELETE"%>>
         <button type='submit'>Delete</button>
       </form>
       <%}%>
