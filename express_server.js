@@ -23,24 +23,15 @@ function generateRandomString() {
 }
 
 var urlDatabase = {
-  "userRandomID":{
-    "b2xVn2": "http://www.lighthouselabs.ca",
-    "9sm5xK": "http://www.google.com"
-  }
 };
 
 const users = { 
-  "userRandomID": {
-    id: "userRandomID", 
-    email: "user@example.com", 
-    password: "purple-monkey-dinosaur"
-  },
- "user2RandomID": {
-    id: "user2RandomID", 
-    email: "user2@example.com", 
-    password: "dishwasher-funk"
-  }
 }
+
+app.get("/", (req, res) => {  
+  res.redirect("/urls");
+});
+
 //Login routes
 app.get("/login", (req, res) => {
     let templateVars = {
@@ -52,26 +43,27 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   let userMatch = false;
+  let passMatch = false
   for(x in users){
     if(users[x].email === req.body.username){
       userMatch = true
       if(bcrypt.compareSync(req.body.password, users[x].password)){
-        req.session.user_id =  x;
-      }else{
-        res.status(403).send('Password does not match');
+        passMatch = true;
+        req.session.user_id =  x;     
       }
     }
   }
   if(!userMatch){
     res.status(403).send('User not found');
-  }else{
-    res.redirect('/urls'); 
-  } 
+  }else if(!passMatch){
+    res.status(403).send('Password does not match');
+  }
+  res.redirect('/urls'); 
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id');
-  res.redirect('/urls');  
+  req.session = null; 
+  res.redirect('/urls'); 
 });
 
 
@@ -102,6 +94,7 @@ app.post("/register", (req, res) => {
       };
       urlDatabase[userid] = {};
     req.session.user_id = userid
+    console.log(req.session.user_id)
     res.redirect('/urls');
   }
 });
@@ -111,13 +104,13 @@ app.post("/register", (req, res) => {
 //Shows users urls
 app.get("/urls", (req, res) => {
   let templateVars = {
-    res:res,
     user: users[req.session.user_id],
-    urls:{}
   };
   for(x in urlDatabase){
     if (req.session.user_id === x){
+      console.log(x,req.session.user_id)
       templateVars['urls'] = urlDatabase[x];
+      console.log(templateVars.urls)
     }
   }
   res.render("urls_index",templateVars)
@@ -135,7 +128,9 @@ app.get("/urls/new", (req, res) => {
 //Creates a url
 app.post("/urls/new", (req, res) => {
   var id = generateRandomString();
+  console.log(req.session.user_id)
   urlDatabase[req.session.user_id][id] = req.body.longURL;
+  console.log(urlDatabase)
   res.redirect('/urls');
 });
 
@@ -164,12 +159,13 @@ app.get("/u/:shortURL", (req, res) => {
   let longURL;
   for(x in urlDatabase){
     for (y in urlDatabase[x]){
+      console.log(y);
       if(y === req.params.shortURL){
         longURL = urlDatabase[x][req.params.shortURL];
       }
     }
   }
-  res.redirect(longURL);
+  res.redirect(longURL.search('http') ? `https://${longURL}` : longURL);
 });
 
 app.listen(PORT, () => {
