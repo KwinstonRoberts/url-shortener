@@ -2,7 +2,7 @@ var express = require("express");
 var cookieParser = require('cookie-parser');
 var app = express();
 var PORT = process.env.PORT || 8080; // default port 8080
-
+const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({extended: true}));
@@ -115,7 +115,7 @@ app.post("/register", (req, res) => {
       users[userid] = {
         id: userid,
         email: req.body.username,
-        password: req.body.password
+        password: bcrypt.hashSync(req.body.password,10)
       };
       urlDatabase[userid] = {};
       console.log(users);
@@ -143,7 +143,7 @@ app.post("/login", (req, res) => {
   for(x in users){
     if(users[x].email===req.body.username){
       userMatch = true
-      if(users[x].password===req.body.password){
+      if(bcrypt.compareSync(req.body.password, users[x].password)){
         res.cookie('user_id',x);
       }else{
         res.status(403).send('Password does not match');
