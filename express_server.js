@@ -46,7 +46,8 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
     let templateVars =  {
-      user: users[req.cookies["user_id"]]
+      user: users[req.cookies["user_id"]],
+      res:res
     };
   res.render("urls_new",templateVars);
 });
