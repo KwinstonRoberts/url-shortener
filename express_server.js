@@ -2,8 +2,9 @@ const express = require("express");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
-
+var methodOverride = require('method-override')
 var app = express();
+app.use(methodOverride('X-HTTP-Method-Override'))
 
 app.set('trust proxy', 1);
 app.set("view engine", "ejs");
