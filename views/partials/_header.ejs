@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<title>TinyApp</title>
-</head>
-<body style="font-size:20px; padding:50px;">
-	<% if(user!==undefined){%>
-		<b><%=user.email%></b>
-		<form method='POST' action='/logout'>
-			<button>Logout</button>
-		</form>	
-	<%}else{%>
-	<a href='/login'> Login </a>
-	<a href='/register'> Register </a>
-	<%}%>
+  <head>
+    <title>TinyApp</title>
+  </head>
+  <body style="font-size:20px; padding:50px;">
+    <% if(user !== undefined){%>
+      <b><%=user.email%></b>
+      <form method='POST' action='/logout'>
+        <button>Logout</button>
+      </form> 
+    <%}else{%>
+    <a href='/login'> Login </a>
+    <a href='/register'> Register </a>
+    <%}%>
