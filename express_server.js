@@ -94,7 +94,6 @@ app.post("/register", (req, res) => {
       };
       urlDatabase[userid] = {};
     req.session.user_id = userid
-    console.log(req.session.user_id)
     res.redirect('/urls');
   }
 });
@@ -108,9 +107,7 @@ app.get("/urls", (req, res) => {
   };
   for(x in urlDatabase){
     if (req.session.user_id === x){
-      console.log(x,req.session.user_id)
       templateVars['urls'] = urlDatabase[x];
-      console.log(templateVars.urls)
     }
   }
   res.render("urls_index",templateVars)
@@ -128,9 +125,7 @@ app.get("/urls/new", (req, res) => {
 //Creates a url
 app.post("/urls/new", (req, res) => {
   var id = generateRandomString();
-  console.log(req.session.user_id)
   urlDatabase[req.session.user_id][id] = req.body.longURL;
-  console.log(urlDatabase)
   res.redirect('/urls');
 });
 
@@ -159,7 +154,6 @@ app.get("/u/:shortURL", (req, res) => {
   let longURL;
   for(x in urlDatabase){
     for (y in urlDatabase[x]){
-      console.log(y);
       if(y === req.params.shortURL){
         longURL = urlDatabase[x][req.params.shortURL];
       }
