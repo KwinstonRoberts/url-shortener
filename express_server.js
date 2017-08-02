@@ -1,6 +1,8 @@
 const express = require("express");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
+const path = require('path');
+
 const bodyParser = require("body-parser");
 var methodOverride = require('method-override')
 var app = express();
@@ -8,13 +10,14 @@ var app = express();
 app.set('trust proxy', 1);
 app.set("view engine", "ejs");
 
-app.use(methodOverride('X-HTTP-Method-Override'));
+app.use(methodOverride('_method'))
 app.use(cookieSession({
   name: 'user_id',
   keys : ['key1','key2'],
   maxAge: 24 * 60 * 60 * 1000, 
 }));
 app.use(bodyParser.urlencoded({extended: true}));
+app.use('/css',express.static(path.join(__dirname, 'styles')))
 
 const PORT = process.env.PORT || 8080; // default port 8080
 
@@ -141,13 +144,13 @@ app.get("/urls/:id", (req, res) => {
 });
 
 //Change the long url of a chosen url
-app.put("/urls/:id", (req, res) => {
+app.post("/urls/:id", (req, res) => {
   urlDatabase[req.session.user_id][req.params.id] = req.body.longURL
   res.redirect('/urls')
 });
 
 //Delete a url
-app.delete("/urls/:id/delete", (req, res) => {
+app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.session.user_id][req.params.id];
   res.redirect('/urls');
 });

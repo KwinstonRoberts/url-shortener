@@ -1,10 +1,9 @@
 <% if(user === undefined){res.redirect('/login');}else{ %>
 <% include partials/_header %>
-       <form action="/urls/new?method=PUT" method="POST" style="margin:150px;">
-       <label for="longURL">Enter a URL:</label>
-       <input id="longURL" type="text" name="longURL" placeholder="http://"  style="width: 300px">
-       <input type="submit" value="Submit">
+       <form action="/urls/new" method="POST" style="margin:150px;">
+       <h2 class='title' for="longURL">Enter a URL:</h2>
+       <b id='urlNew'>Url: </b><input id="longURL" type="text" name="longURL" placeholder="http://">
+       <button id=urlSubmit>Submit</button>
     </form>
-  </body>
-</html>
+ <%include partials/_footer%>
 <%}%>

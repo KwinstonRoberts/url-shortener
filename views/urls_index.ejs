@@ -1,17 +1,20 @@
 <% include partials/_header %>
+
   <% if(!user){%>
+  <h2 class='title'>Oh Dear :(</h2>
     <b>You must be logged in to see your shortened urls </b>
     <%}else if(!Object.keys(urls).length){%>
-    <b>You don't have any urls. why not make one below!</b></br>
-    <a href='urls/new'> shorten new url </a>
+    <h2 class='title'>You don't have any urls. why not make one below!</h2>
+    <a class='btn' href='urls/new'> shorten new url </a>
     <%}else{%>
+     <h2 class='title'><%=user.email%>'s Urls</h2>
     <% for(x in urls){ %>
-      <p><%=x%> ~> <a href='<%= 'https://' + urls[x].replace('https://','')%>'><%= urls[x] %></a> <a href='urls/<%=x%>'> Edit </a> </p>
-      <form method="POST" action=<%="/urls/" + x + "/delete?method=DELETE"%>>
-        <button type='submit'>Delete</button>
-      </form>
+      <span class='url-item'><b class='left'><%=x%> ~> </b><a class='left' href='<%= 'https://' + urls[x].replace('https://','')%>'><%= urls[x] %></a> </span><a class='btn left' href='urls/<%=x%>'> Edit </a>
+      <form class='left' method="POST" action=<%="/urls/" + x + "/delete?method=DELETE"%>>
+        <button class='btn'>Delete</button>
+      </form></span>
+      <div class='clearfix'></div>
       <%}%>
-      <a href='urls/new'> shorten new url </a>
+      <a class='btn' href='urls/new'> shorten new url </a>
       <%}%>
-  </body>
-</html>
+ <%include partials/_footer%>

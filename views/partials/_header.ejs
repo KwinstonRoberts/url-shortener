@@ -2,14 +2,20 @@
 <html lang="en">
   <head>
     <title>TinyApp</title>
+    <link rel='stylesheet' type="text/css" href="../css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet">
   </head>
-  <body style="font-size:20px; padding:50px;">
-    <% if(user !== undefined){%>
-      <b><%=user.email%></b>
-      <form method='POST' action='/logout'>
-        <button>Logout</button>
-      </form> 
-    <%}else{%>
-    <a href='/login'> Login </a>
-    <a href='/register'> Register </a></br>
-    <%}%>
+  <body>
+    <nav>
+      <% if(user !== undefined){%>
+        <b><%=user.email%></b>
+        <form method='POST' action='/logout'>
+         <button>Logout</button>
+        </form> 
+      <%}else{%>
+      <a href='/login'> Login </a>
+      <a href='/register'> Register </a></br>
+      <%}%>
+    </nav>
+    <div class='clearfix'>
+    <article>

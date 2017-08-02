@@ -5,8 +5,8 @@
 	<%=users[visits[shortURL].unique[x][0]].email%> ~~ <p><%=visits[shortURL].unique[x][1]%><p><br>
   <%};%>
   
-  <form method='POST' action="/urls/<%=shortURL%>">
-  <span><input name='longURL' type='text'><button type='submit'>update</button></span>
+  <form method='POST' action="/urls/<%=shortURL%>?method=PUT">
+ 	<input name='longURL' type='text'>
+ 	<button type='submit'>update</button>
   </form>
-</body>
-</html>
+ <%include partials/_footer%>
