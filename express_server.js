@@ -141,13 +141,13 @@ app.get("/urls/:id", (req, res) => {
 });
 
 //Change the long url of a chosen url
-app.put("/urls/:id", (req, res) => {
+app.post("/urls/:id", (req, res) => {
   urlDatabase[req.session.user_id][req.params.id] = req.body.longURL
   res.redirect('/urls')
 });
 
 //Delete a url
-app.delete("/urls/:id/delete", (req, res) => {
+app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.session.user_id][req.params.id];
   res.redirect('/urls');
 });
