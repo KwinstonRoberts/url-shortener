@@ -4,11 +4,11 @@ const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
 var methodOverride = require('method-override')
 var app = express();
-app.use(methodOverride('X-HTTP-Method-Override'))
 
 app.set('trust proxy', 1);
 app.set("view engine", "ejs");
 
+app.use(methodOverride('X-HTTP-Method-Override'));
 app.use(cookieSession({
   name: 'user_id',
   keys : ['key1','key2'],
@@ -18,16 +18,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const PORT = process.env.PORT || 8080; // default port 8080
 
-
 function generateRandomString() {
     return Math.floor((1 + Math.random()) * 0x1000000).toString(16).substring(1);
 }
 
-var urlDatabase = {
-};
-
-const users = { 
-}
+const urlDatabase = {};
+const users = {};
+const visits = {};
 
 app.get("/", (req, res) => {  
   res.redirect("/urls");
@@ -40,7 +37,6 @@ app.get("/login", (req, res) => {
     };
     res.render("login",templateVars);
 });
-
 
 app.post("/login", (req, res) => {
   let userMatch = false;
@@ -95,7 +91,6 @@ app.post("/register", (req, res) => {
       };
       urlDatabase[userid] = {};
     req.session.user_id = userid
-    console.log(req.session.user_id)
     res.redirect('/urls');
   }
 });
@@ -109,9 +104,7 @@ app.get("/urls", (req, res) => {
   };
   for(x in urlDatabase){
     if (req.session.user_id === x){
-      console.log(x,req.session.user_id)
       templateVars['urls'] = urlDatabase[x];
-      console.log(templateVars.urls)
     }
   }
   res.render("urls_index",templateVars)
@@ -129,16 +122,20 @@ app.get("/urls/new", (req, res) => {
 //Creates a url
 app.post("/urls/new", (req, res) => {
   var id = generateRandomString();
-  console.log(req.session.user_id)
   urlDatabase[req.session.user_id][id] = req.body.longURL;
-  console.log(urlDatabase)
+  visits[id] = {
+    visits:0,
+    unique:[]
+  } 
   res.redirect('/urls');
 });
 
 //Id specific url page - can change long url here
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
+    users : users,
     user: users[req.session.user_id],
+    visits:visits,
     shortURL: req.params.id };
   res.render("urls_show", templateVars);
 });
@@ -160,9 +157,22 @@ app.get("/u/:shortURL", (req, res) => {
   let longURL;
   for(x in urlDatabase){
     for (y in urlDatabase[x]){
-      console.log(y);
       if(y === req.params.shortURL){
         longURL = urlDatabase[x][req.params.shortURL];
+        visits[req.params.shortURL].visits+=1;
+        let exists=false;
+        if(!visits[req.params.shortURL].unique.length){
+          exists=false;
+        }else{
+          for(z in visits[req.params.shortURL].unique){
+            if(visits[req.params.shortURL].unique[z]===req.session.user_id){
+              exists = true;
+            }
+          }
+        }
+        if(!exists){
+          visits[req.params.shortURL].unique.push([req.session.user_id,new Date()]);
+        }
       }
     }
   }

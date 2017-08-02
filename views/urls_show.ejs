@@ -1,8 +1,12 @@
 <% include partials/_header %>
-  <h2>ShortURL: <b><%= shortURL %></b></h2>
+  <h2>ShortURL: <b><%= shortURL %> Visits: <%=visits[shortURL].visits%></b> 
+  Visited By: <%=visits[shortURL].unique.length;%></h2><br>
+  <% for(x in visits[shortURL].unique){ %>
+	<%=users[visits[shortURL].unique[x][0]].email%> ~~ <p><%=visits[shortURL].unique[x][1]%><p><br>
+  <%};%>
+  
   <form method='POST' action="/urls/<%=shortURL%>">
   <span><input name='longURL' type='text'><button type='submit'>update</button></span>
   </form>
 </body>
-
 </html>
