@@ -2,12 +2,13 @@ const express = require("express");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const bodyParser = require("body-parser");
-
+var methodOverride = require('method-override')
 var app = express();
 
 app.set('trust proxy', 1);
 app.set("view engine", "ejs");
 
+app.use(methodOverride('X-HTTP-Method-Override'));
 app.use(cookieSession({
   name: 'user_id',
   keys : ['key1','key2'],
@@ -17,16 +18,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 const PORT = process.env.PORT || 8080; // default port 8080
 
-
 function generateRandomString() {
     return Math.floor((1 + Math.random()) * 0x1000000).toString(16).substring(1);
 }
 
-var urlDatabase = {
-};
-
-const users = { 
-}
+const urlDatabase = {};
+const users = {};
+const visits = {};
 
 app.get("/", (req, res) => {  
   res.redirect("/urls");
@@ -39,7 +37,6 @@ app.get("/login", (req, res) => {
     };
     res.render("login",templateVars);
 });
-
 
 app.post("/login", (req, res) => {
   let userMatch = false;
@@ -126,13 +123,19 @@ app.get("/urls/new", (req, res) => {
 app.post("/urls/new", (req, res) => {
   var id = generateRandomString();
   urlDatabase[req.session.user_id][id] = req.body.longURL;
+  visits[id] = {
+    visits:0,
+    unique:[]
+  } 
   res.redirect('/urls');
 });
 
 //Id specific url page - can change long url here
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
+    users : users,
     user: users[req.session.user_id],
+    visits:visits,
     shortURL: req.params.id };
   res.render("urls_show", templateVars);
 });
@@ -156,6 +159,20 @@ app.get("/u/:shortURL", (req, res) => {
     for (y in urlDatabase[x]){
       if(y === req.params.shortURL){
         longURL = urlDatabase[x][req.params.shortURL];
+        visits[req.params.shortURL].visits+=1;
+        let exists=false;
+        if(!visits[req.params.shortURL].unique.length){
+          exists=false;
+        }else{
+          for(z in visits[req.params.shortURL].unique){
+            if(visits[req.params.shortURL].unique[z]===req.session.user_id){
+              exists = true;
+            }
+          }
+        }
+        if(!exists){
+          visits[req.params.shortURL].unique.push([req.session.user_id,new Date()]);
+        }
       }
     }
   }
