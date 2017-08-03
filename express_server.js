@@ -159,23 +159,19 @@ app.get("/u/:shortURL", (req, res) => {
     for (y in urlDatabase[x]){
       if(y === req.params.shortURL){
         longURL = urlDatabase[x][req.params.shortURL];
-        visits[req.params.shortURL].visits+=1;
+        visits[req.params.shortURL].visits++;
         let exists=false;
-        if(!visits[req.params.shortURL].unique.length){
-          exists=false;
-        }else{
           for(z in visits[req.params.shortURL].unique){
-            if(visits[req.params.shortURL].unique[z]===req.session.user_id){
+            if(visits[req.params.shortURL].unique[z][0]===req.session.user_id){
               exists = true;
             }
           }
-        }
-        if(!exists){
-          visits[req.params.shortURL].unique.push([req.session.user_id,new Date()]);
+          if(!exists){
+            visits[req.params.shortURL].unique.push([req.session.user_id,new Date()]);
+          }
         }
       }
     }
-  }
   res.redirect(longURL.search('http') ? `https://${longURL}` : longURL);
 });
 
